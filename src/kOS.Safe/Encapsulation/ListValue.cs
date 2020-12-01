@@ -48,7 +48,7 @@ namespace kOS.Safe.Encapsulation
         public void RemoveAt(int index)
         {
             CheckReadOnly();
-            Collection.RemoveAt(index);
+            Collection.RemoveAt(GetAbsoluteIndex(index));
         }
 
         public T this[int index]
@@ -100,39 +100,27 @@ namespace kOS.Safe.Encapsulation
         public static ListValue<T> CreateList<TU>(IEnumerable<TU> list) =>
             new ListValue<T>(list.Cast<T>());
 
-        public Structure GetIndex(int index) =>
-            Collection[index];
+        public Structure GetIndex(int index)
+        {
+            return Collection[GetAbsoluteIndex(index)];
+        }
 
         public Structure GetIndex(Structure index)
         {
-            if (index is ScalarValue)
-            {
-                int i = Convert.ToInt32(index);  // allow expressions like (1.0) to be indexes
-                return GetIndex(i);
-            }
-            // Throw cast exception with ScalarIntValue, instead of just any ScalarValue
-            throw new KOSCastException(index.GetType(), typeof(ScalarIntValue));
+            return GetIndex(GetIntIndex(index));
         }
 
         public void SetIndex(Structure index, Structure value)
         {
             CheckReadOnly();
-            int idx;
-            try
-            {
-                idx = Convert.ToInt32(index);
-            }
-            catch
-            {
-                throw new KOSException("The index must be an integer number");
-            }
-            Collection[idx] = (T)value;
+            int idx = GetIntIndex(index);
+            Collection[GetAbsoluteIndex(idx)] = (T)value;
         }
 
         public void SetIndex(int index, Structure value)
         {
             CheckReadOnly();
-            Collection[index] = (T)value;
+            Collection[GetAbsoluteIndex(index)] = (T)value;
         }
 
         private StringValue Join(StringValue separator) =>
@@ -143,7 +131,23 @@ namespace kOS.Safe.Encapsulation
         public void Insert(int index, T item)
         {
             CheckReadOnly();
-            Collection.Insert(index, item);
+            Collection.Insert(GetAbsoluteIndex(index), item);
+        }
+
+        private int GetAbsoluteIndex(int index)
+        {
+            // support for negative indexes, a value of -1 returns the last element, of -2 the second-last element, and so on.
+            return index + (index < 0 ? Collection.Count : 0);
+        }
+
+        private int GetIntIndex(Structure index)
+        {
+            if (index is ScalarValue)
+            {
+                return Convert.ToInt32(index);  // allow expressions like (1.0) to be indexes
+            }
+            // Throw cast exception with ScalarIntValue, instead of just any ScalarValue
+            throw new KOSCastException(index.GetType(), typeof(ScalarIntValue));
         }
     }
 
