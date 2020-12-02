@@ -62,6 +62,7 @@ namespace kOS.Safe.Encapsulation
             AddSuffix("CONTAINS",        new OneArgsSuffix<BooleanValue, T>((n) => Contains(n)));
             AddSuffix("EMPTY",           new NoArgsSuffix<BooleanValue>(() => !InnerEnumerable.Any()));
             AddSuffix("DUMP",            new NoArgsSuffix<StringValue>(() => new StringValue(ToString())));
+            AddSuffix("TOLIST",          new NoArgsSuffix<ListValue<T>>(() => new ListValue<T>(InnerEnumerable)));
         }
     }
 }
