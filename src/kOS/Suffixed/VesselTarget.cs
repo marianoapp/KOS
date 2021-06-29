@@ -33,8 +33,38 @@ namespace kOS.Suffixed
         }
         public override Vector GetPosition()
         {
-            return new Vector(Vessel.CoMD - CurrentVessel.CoMD);
+            return new Vector(GetPositionInternal());
         }
+
+        private Vector3d GetPositionInternal()
+        {
+            return Vessel.CoMD - CurrentVessel.CoMD + GetPositionError();
+        }
+
+        public Vector3d GetPositionError()
+        {
+            Vector3d positionError = Vector3d.zero;
+            // Workaround to fix a KSP bug:
+            // When the target vessel is packed KSP returns the position where it's going to be
+            // in the next simulation frame instead of the position where it is now.
+            // To work around this issue the velocity of the target vessel is integrated over one frame
+            // to calculate the corrent position in the current simulation frame.
+
+            // normal time or physics warp
+            bool usingPhysics = TimeWarp.CurrentRate == 1f || TimeWarp.WarpMode == TimeWarp.Modes.LOW;
+
+            if (Vessel.loaded && Vessel.packed && usingPhysics && CurrentVessel.isActiveVessel)
+            {
+                // If the body is in inverse rotation mode (i.e. the world axis are fixed to the body surface) the surface velocity is used
+                // because the position reported by KSP is accounting for the frame of reference rotation
+                Vector3d velocity = CurrentVessel.mainBody.inverseRotation ? Vessel.srf_velocity : Vessel.obt_velocity;
+                // Calculate the current position by integrating the velocity vector over one frame and subtracting that from the reported position
+                positionError = -velocity * TimeWarp.fixedDeltaTime;
+            }
+
+            return positionError;
+        }
+
         public override OrbitableVelocity GetVelocities()
         {
             return new OrbitableVelocity(Vessel);
@@ -50,7 +80,7 @@ namespace kOS.Suffixed
         /// <param name="timeStamp">The time to predict for.  Although the intention is to
         ///   predict for a future time, it could be used to predict for a past time.</param>
         /// <returns>The position as a user-readable Vector in Shared.Vessel-origin raw rotation coordinates.</returns>
-        public override Vector GetPositionAtUT(TimeSpan timeStamp)
+        public override Vector GetPositionAtUT(TimeStamp timeStamp)
         {
             string blockingTech;
             if (!Career.CanMakeNodes(out blockingTech))
@@ -88,7 +118,7 @@ namespace kOS.Suffixed
         /// <param name="timeStamp">The time to predict for.  Although the intention is to
         ///   predict for a future time, it could be used to predict for a past time.</param>
         /// <returns>The orbit/surface velocity pair as a user-readable Vector in raw rotation coordinates.</returns>
-        public override OrbitableVelocity GetVelocitiesAtUT(TimeSpan timeStamp)
+        public override OrbitableVelocity GetVelocitiesAtUT(TimeStamp timeStamp)
         {
             string blockingTech;
             if (!Career.CanMakeNodes(out blockingTech))
@@ -189,7 +219,7 @@ namespace kOS.Suffixed
         // in order to implement the orbit solver later.
         public ScalarValue GetDistance()
         {
-            return Vector3d.Distance(CurrentVessel.CoMD, Vessel.CoMD);
+            return GetPositionInternal().magnitude;
         }
 
         public static string[] ShortCuttableShipSuffixes { get; private set; }
@@ -282,6 +312,10 @@ namespace kOS.Suffixed
             AddSuffix("SIZECLASS", new Suffix<StringValue>(GetSizeClass));
 
             AddSuffix("SOICHANGEWATCHERS", new NoArgsSuffix<UniqueSetValue<UserDelegate>>(() => Shared.DispatchManager.CurrentDispatcher.GetSOIChangeNotifyees(Vessel)));
+
+#if DEBUG
+            AddSuffix("POSITIONERROR", new Suffix<Vector>(() => new Vector(GetPositionError())));
+#endif
         }
 
         public ScalarValue GetCrewCapacity()

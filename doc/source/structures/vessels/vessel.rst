@@ -301,7 +301,7 @@ Vessels are also :ref:`Orbitable<orbitable>`, and as such have all the associate
     currently stages 5, 4, 3, 2, 1, and 0, then passing in -99 gives you stage 0,
     and passing in stage 9999 gets you stage 5.
 
-.. attribute:: STAGENUM
+.. attribute:: Vessel:STAGENUM
 
     :type: :struct:`Scalar`
     :access: get only
@@ -516,48 +516,55 @@ Vessels are also :ref:`Orbitable<orbitable>`, and as such have all the associate
     :parameter name: (:ref:`string <string>`) Name of the parts
     :return: :struct:`List` of :struct:`Part` objects
 
-    Part:NAME. The matching is done case-insensitively. For more information, see :ref:`ship parts and modules <parts and partmodules>`.
+    Returns a list of all the parts that have this as their
+    ``Part:NAME``. The matching is done case-insensitively. For more information, see :ref:`ship parts and modules <parts and partmodules>`.
 
 .. method:: Vessel:PARTSNAMEDPATTERN(namePattern)
 
     :parameter namePattern: (:ref:`string <string>`) Pattern of the name of the parts
     :return: :struct:`List` of :struct:`Part` objects
 
-    Part:NAME. The matching is done identically as in :meth:`String:MATCHESPATTERN`\ . For more information, see :ref:`ship parts and modules <parts and partmodules>`.
+    Returns a list of all the parts that have this Regex pattern in their
+    ``Part:NAME``. The matching is done identically as in :meth:`String:MATCHESPATTERN`\ . For more information, see :ref:`ship parts and modules <parts and partmodules>`.
 
 .. method:: Vessel:PARTSTITLED(title)
 
     :parameter title: (:ref:`string <string>`) Title of the parts
     :return: :struct:`List` of :struct:`Part` objects
 
-    Part:TITLE. The matching is done case-insensitively. For more information, see :ref:`ship parts and modules <parts and partmodules>`.
+    Returns a list of all the parts that have this as their
+    ``Part:TITLE``. The matching is done case-insensitively. For more information, see :ref:`ship parts and modules <parts and partmodules>`.
 
 .. method:: Vessel:PARTSTITLEDPATTERN(titlePattern)
 
     :parameter titlePattern: (:ref:`string <string>`) Patern of the title of the parts
     :return: :struct:`List` of :struct:`Part` objects
 
-    Part:TITLE. The matching is done identically as in :meth:`String:MATCHESPATTERN`\ . For more information, see :ref:`ship parts and modules <parts and partmodules>`.
+    Returns a list of all the parts that have this Regex pattern in their
+    ``Part:TITLE``. The matching is done identically as in :meth:`String:MATCHESPATTERN`\ . For more information, see :ref:`ship parts and modules <parts and partmodules>`.
 
 .. method:: Vessel:PARTSTAGGED(tag)
 
     :parameter tag: (:ref:`string <string>`) Tag of the parts
     :return: :struct:`List` of :struct:`Part` objects
 
-    Part:TAG value. The matching is done case-insensitively. For more information, see :ref:`ship parts and modules <parts and partmodules>`.
+    Returns a list of all the parts that have this name as their
+    ``Part:TAG`` value. The matching is done case-insensitively. For more information, see :ref:`ship parts and modules <parts and partmodules>`.
 
 .. method:: Vessel:PARTSTAGGEDPATTERN(tagPattern)
 
     :parameter tagPattern: (:ref:`string <string>`) Pattern of the tag of the parts
     :return: :struct:`List` of :struct:`Part` objects
 
-    Part:TAG value. The matching is done identically as in :meth:`String:MATCHESPATTERN`\ . For more information, see :ref:`ship parts and modules <parts and partmodules>`.
+    Returns a list of all the parts that match this Regex pattern in their
+    ``part:TAG`` value. The matching is done identically as in :meth:`String:MATCHESPATTERN`\ . For more information, see :ref:`ship parts and modules <parts and partmodules>`.
 
 .. method:: Vessel:PARTSDUBBED(name)
 
     :parameter name: (:ref:`string <string>`) name, title or tag of the parts
     :return: :struct:`List` of :struct:`Part` objects
 
+    Return a list of all the parts that match this
     name regardless of whether that name is the Part:Name, the Part:Tag, or the Part:Title. It is effectively the distinct union of :PARTSNAMED(val), :PARTSTITLED(val), :PARTSTAGGED(val). The matching is done case-insensitively. For more information, see :ref:`ship parts and modules <parts and partmodules>`.
 
 .. method:: Vessel:PARTSDUBBEDPATTERN(namePattern)
@@ -565,13 +572,15 @@ Vessels are also :ref:`Orbitable<orbitable>`, and as such have all the associate
     :parameter namePattern: (:ref:`string <string>`) Pattern of the name, title or tag of the parts
     :return: :struct:`List` of :struct:`Part` objects
 
-    name regardless of whether that name is the Part:Name, the Part:Tag, or the Part:Title. It is effectively the distinct union of :PARTSNAMEDPATTERN(val), :PARTSTITLEDPATTERN(val), :PARTSTAGGEDPATTERN(val). The matching is done identically as in :meth:`String:MATCHESPATTERN`\ . For more information, see :ref:`ship parts and modules <parts and partmodules>`.
+    Return a list of parts that match this Regex pattern
+    regardless of whether that name is the Part:Name, the Part:Tag, or the Part:Title. It is effectively the distinct union of :PARTSNAMEDPATTERN(val), :PARTSTITLEDPATTERN(val), :PARTSTAGGEDPATTERN(val). The matching is done identically as in :meth:`String:MATCHESPATTERN`\ . For more information, see :ref:`ship parts and modules <parts and partmodules>`.
 
 .. method:: Vessel:MODULESNAMED(name)
 
     :parameter name: (:ref:`string <string>`) Name of the part modules
     :return: :struct:`List` of :struct:`PartModule` objects
 
+    Return a list of all the :struct:`PartModule` objects that
     match the given name. The matching is done case-insensitively. For more information, see :ref:`ship parts and modules <parts and partmodules>`.
 
 .. method:: Vessel:PARTSINGROUP(group)
@@ -592,7 +601,8 @@ Vessels are also :ref:`Orbitable<orbitable>`, and as such have all the associate
 
     :return: :struct:`List` of :struct:`Part` objects
 
-    nametag on them of any sort that is nonblank. For more information, see :ref:`ship parts and modules <parts and partmodules>`.
+    Return all parts who's nametag isn't blank.
+    For more information, see :ref:`ship parts and modules <parts and partmodules>`.
 
 .. attribute:: Vessel:CREWCAPACITY
 
@@ -619,7 +629,7 @@ Vessels are also :ref:`Orbitable<orbitable>`, and as such have all the associate
 
     Returns this vessel's message queue. You can only access this attribute for your current vessel (using for example `SHIP:MESSAGES`).
 
-.. attribute:: Vessel:`DELTAV`
+.. attribute:: Vessel:DELTAV
 
     :return: :struct:`scalar`
 
@@ -627,7 +637,7 @@ Vessels are also :ref:`Orbitable<orbitable>`, and as such have all the associate
     calulations the KSP game shows in the staging list.  Note that this is only
     as accurate as the stock KSP game's numbers are.
 
-.. attribute:: Vessel:`DELTAVASL`
+.. attribute:: Vessel:DELTAVASL
 
     :return: :struct:`scalar`
 
@@ -635,7 +645,7 @@ Vessels are also :ref:`Orbitable<orbitable>`, and as such have all the associate
     calulations the KSP game shows in the staging list.  Note that this is only
     as accurate as the stock KSP game's numbers are.
 
-.. attribute:: Vessel:`DELTAVVACUUM`
+.. attribute:: Vessel:DELTAVVACUUM
 
     :return: :struct:`scalar`
 
@@ -643,7 +653,7 @@ Vessels are also :ref:`Orbitable<orbitable>`, and as such have all the associate
     calulations the KSP game shows in the staging list.  Note that this is only
     as accurate as the stock KSP game's numbers are.
 
-.. attribute:: Vessel:`BURNTIME`
+.. attribute:: Vessel:BURNTIME
 
     :return: :struct:`scalar`
 

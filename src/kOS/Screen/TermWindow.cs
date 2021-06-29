@@ -11,7 +11,6 @@ using kOS.UserIO;
 using kOS.Safe.UserIO;
 using KSP.UI.Dialogs;
 using kOS.Safe.Utilities;
-using ClickThroughFix; // Needs ClickThroughBlocker DLL to be in the Reference directory.
 
 namespace kOS.Screen
 {
@@ -81,9 +80,9 @@ namespace kOS.Screen
             
         private bool isLocked;
         /// <summary>How long blinks should last for, for various blinking needs</summary>
-        private readonly TimeSpan blinkDuration = TimeSpan.FromMilliseconds(150);
+        private readonly TimeSpan blinkDuration = System.TimeSpan.FromMilliseconds(150);
         /// <summary>How long to pad between consecutive blinks to ensure they are visibly detectable as distinct blinks.</summary>
-        private readonly TimeSpan blinkCoolDownDuration = TimeSpan.FromMilliseconds(50);
+        private readonly TimeSpan blinkCoolDownDuration = System.TimeSpan.FromMilliseconds(50);
         /// <summary>At what milliseconds-from-epoch timestamp will the current blink be over.</summary>
         private DateTime blinkEndTime;
         /// <summary>text color that changes depending on if the computer is on</summary>
@@ -342,7 +341,7 @@ namespace kOS.Screen
             // Should probably make "gui screen name for my CPU part" into some sort of utility method:
             ChangeTitle(CalcualteTitle());
 
-            WindowRect = ClickThruBlocker.GUIWindow(UniqueId, WindowRect, TerminalGui, TitleText);
+            WindowRect = GUI.Window(UniqueId, WindowRect, TerminalGui, TitleText);
             
             if (consumeEvent)
             {
@@ -439,7 +438,7 @@ namespace kOS.Screen
             
             // Throttle it back so the faster Update() rates don't cause pointlessly repeated work:
             // Needs to be no faster than the fastest theoretical typist or script might change the view.
-            if (newTime > lastTelnetIncrementalRepaint + TimeSpan.FromMilliseconds(50)) // = 1/20th second.
+            if (newTime > lastTelnetIncrementalRepaint + System.TimeSpan.FromMilliseconds(50)) // = 1/20th second.
             {
                 lastTelnetIncrementalRepaint = newTime;
                 foreach (TelnetSingletonServer telnet in telnets)
@@ -628,7 +627,7 @@ namespace kOS.Screen
         /// doesn't get the order mixed up.  (I.e. use it for paste buffer dumps or telnet input, but not
         /// live GUI typed stuff.)</param>
         /// <returns>True if the input got consuemed or enqueued.  If the input was blocked and not ignored, it returns false.</returns>
-        public bool ProcessOneInputChar(char ch, TelnetSingletonServer whichTelnet, bool allowQueue = true, bool forceQueue = true)
+        public bool ProcessOneInputChar(char ch, TelnetSingletonServer whichTelnet, bool allowQueue, bool forceQueue)
         {
             // Weird exceptions for multi-char data combos that would have been begun on previous calls to this method:
             switch (inputExpected)
@@ -706,6 +705,38 @@ namespace kOS.Screen
             }
 
             // else ignore it - unimplemented char.
+        }
+
+        /// <summary>
+        /// This is identical to calling ProcessOneInputChar with forceQueue defaulted to true,
+        /// and it returns void instead of bool.
+        /// <para>This is being done this way because it has to match exactly to how the
+        /// signature of the method used to look, to keep it compatible with the DLL for
+        /// kOSPropMonitor without kOSPropMonitor being recompiled.</para>
+        /// </summary>
+        /// <param name="ch"></param>
+        /// <param name="whichTelnet"></param>
+        /// <param name="allowQueue"></param>
+        /// <returns></returns>
+        public void ProcessOneInputChar(char ch, TelnetSingletonServer whichTelnet, bool allowQueue)
+        {
+            ProcessOneInputChar(ch, whichTelnet, allowQueue, true);
+        }
+
+        /// <summary>
+        /// This is identical to calling ProcessOneInputChar with allowQueu and forceQueue both defaulted to true,
+        /// and it reutrns void instead of bool.
+        /// <para>This is being done this way because it has to match exactly to how the
+        /// signature of the method used to look, to keep it compatible with the DLL for
+        /// kOSPropMonitor without kOSPropMonitor being recompiled.</para>
+        /// </summary>
+        /// <param name="ch"></param>
+        /// <param name="whichTelnet"></param>
+        /// <param name="allowQueue"></param>
+        /// <returns></returns>
+        public void ProcessOneInputChar(char ch, TelnetSingletonServer whichTelnet)
+        {
+            ProcessOneInputChar(ch, whichTelnet, true, true);
         }
 
         /// <summary>
@@ -845,7 +876,7 @@ namespace kOS.Screen
             
             // Throttle it back so the faster Update() rates don't cause pointlessly repeated work:
             // Needs to be no faster than the fastest theoretical typist or script might change the view.
-            if (newTime > lastBufferGet + TimeSpan.FromMilliseconds(50)) // = 1/20th second.
+            if (newTime > lastBufferGet + System.TimeSpan.FromMilliseconds(50)) // = 1/20th second.
             {
                 mostRecentScreen = new ScreenSnapShot(shared.Screen);
                 lastBufferGet = newTime;

@@ -1,7 +1,7 @@
 .. _eta:
 
 OrbitEta
-===
+========
 
 OrbitEta is a special object that exists just to help you get the
 times from now to certain events in an orbit's future.  It operates
@@ -22,39 +22,40 @@ on an Orbit, and can be obtained one of two ways:
 
     print SHIP:OBT:ETA:APOAPSIS
 
-   .. structure:: OrbitEta
+  .. structure:: OrbitEta
 
-    .. list-table::
-        :header-rows: 1
-        :widths: 2 1 4
+  .. list-table::
 
-        * - Suffix
-          - Type
-          - Description
+     :header-rows: 1
+     :widths: 2 1 4
 
-        * - :attr:`APOAPSIS`
-          - :ref:`scalar <scalar>`, seconds
-          - Seconds from now until apoapsis.
+     * - Suffix
+       - Type
+       - Description
 
-        * - :attr:`PERIAPSIS`
-          - :ref:`scalar <scalar>`, seconds
-          - Seconds from now until periapsis.
+     * - :attr:`APOAPSIS`
+       - :ref:`scalar <scalar>`, seconds
+       - Seconds from now until apoapsis.
 
-        * - :attr:`NEXTNODE`
-          - :ref:`scalar <scalar>`, seconds
-          - Seconds from now until the next maneuver node.
+     * - :attr:`PERIAPSIS`
+       - :ref:`scalar <scalar>`, seconds
+       - Seconds from now until periapsis.
 
-        * - :attr:`TRANSITION`
-          - :ref:`scalar <scalar>`, seconds
-          - Seconds from now until the next orbit patch starts.
+     * - :attr:`NEXTNODE`
+       - :ref:`scalar <scalar>`, seconds
+       - Seconds from now until the next maneuver node.
+
+     * - :attr:`TRANSITION`
+       - :ref:`scalar <scalar>`, seconds
+       - Seconds from now until the next orbit patch starts.
 		  
 .. attribute:: ETA:APOAPSIS
 
     :type: :ref:`scalar <scalar>`, seconds
-    :access: Get only
+    :access: Get-only
 
     Seconds until the object in this orbit patch would hit its apoapsis.
-    Note, that even hypothetical orbits created by :function:`CREATEORBIT`
+    Note, that even hypothetical orbits created by :func:`CREATEORBIT`
     which have no "object in orbit" right now, still have a hypothetical
     imaginary point along that orbit that represents where the "object" is
     "now".

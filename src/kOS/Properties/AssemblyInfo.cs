@@ -31,11 +31,6 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyFileVersion("1.2.1.0")]
-[assembly: AssemblyVersion("1.2.1.0")]
-[assembly: KSPAssembly("kOS", 1, 7)]
-
-// No longer a hard dependancy, because we want to tell the user why kOS isn't working
-// if ClickThroughBlocker is not there, rather than just have it silently refuse to
-// load kOS with no explanation as would happen if this line was enabled:
-// [assembly: KSPAssemblyDependency("ClickThroughBlocker", 1, 0)]
+[assembly: AssemblyFileVersion("1.3.2.0")]
+[assembly: AssemblyVersion("1.3.2.0")]
+[assembly: KSPAssembly("kOS", 1, 3)]
