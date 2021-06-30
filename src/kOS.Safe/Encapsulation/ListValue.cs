@@ -40,11 +40,19 @@ namespace kOS.Safe.Encapsulation
             CheckReadOnly();
             Collection.Add(item);
         }
+
+        public void AddRange(IEnumerable<T> items)
+        {
+            CheckReadOnly();
+            Collection.AddRange(items);
+        }
+
         public bool Remove(T item)
         {
             CheckReadOnly();
             return Collection.Remove(item);
         }
+
         public void RemoveAt(int index)
         {
             CheckReadOnly();
@@ -77,6 +85,7 @@ namespace kOS.Safe.Encapsulation
         {
             AddSuffix("COPY",     new NoArgsSuffix<ListValue<T>>        (() => new ListValue<T>(this)));
             AddSuffix("ADD",      new OneArgsSuffix<T>                  (toAdd => Add(toAdd), Resources.ListAddDescription));
+            AddSuffix("ADDRANGE", new OneArgsSuffix<ListValue<T>>       (toAdd => AddRange(toAdd)));
             AddSuffix("INSERT",   new TwoArgsSuffix<ScalarValue, T>     ((index, toAdd) => Insert(index, toAdd)));
             AddSuffix("REMOVE",   new OneArgsSuffix<ScalarValue>        (toRemove => RemoveAt(toRemove)));
             AddSuffix("SUBLIST",  new TwoArgsSuffix<ListValue, ScalarValue, ScalarValue>(SubListMethod));
@@ -112,9 +121,7 @@ namespace kOS.Safe.Encapsulation
 
         public void SetIndex(Structure index, Structure value)
         {
-            CheckReadOnly();
-            int idx = GetIntIndex(index);
-            Collection[GetAbsoluteIndex(idx)] = (T)value;
+            SetIndex(GetIntIndex(index), value);
         }
 
         public void SetIndex(int index, Structure value)
@@ -148,6 +155,11 @@ namespace kOS.Safe.Encapsulation
             }
             // Throw cast exception with ScalarIntValue, instead of just any ScalarValue
             throw new KOSCastException(index.GetType(), typeof(ScalarIntValue));
+        }
+
+        public static ListValue<T> operator +(ListValue<T> a, ListValue<T> b)
+        {
+            return new ListValue<T>(a.Concat(b));
         }
     }
 
